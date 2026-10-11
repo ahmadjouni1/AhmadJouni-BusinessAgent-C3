@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Runtime logs written by the agent
+*.jsonl
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Gradio
+.gradio/
+flagged/

@@ -1,0 +1,5 @@
+openai>=2.0
+gradio==6.30.0
+pypdf>=5.0
+python-dotenv>=1.0
+reportlab>=4.0   # only needed to regenerate me/about_business.pdf
