@@ -24,13 +24,14 @@ load_dotenv(override=True)
 
 # ---- Configuration -------------------------------------------------------------
 MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")  # main agent: current stable Flash, supports tool calling
-# Router and reflection run on other models: Gemini's free tier rate-limits each model separately
-# (about 5 requests/minute and 20 requests/day), so spreading the 3-4 calls of a turn across models helps.
-ROUTER_MODEL = os.getenv("GEMINI_ROUTER_MODEL", "gemini-3.5-flash-lite")
-REFLECTION_MODEL = os.getenv("GEMINI_REFLECTION_MODEL", "gemini-3.6-flash")
-# Tried in order when a model's daily free-tier quota runs out.
+# Gemini's free tier limits each model separately: Flash models get ~20 requests/day, Flash-Lite models ~500.
+# Router and reflection are simpler jobs, so they run on Flash-Lite and leave the Flash quota for the agent.
+ROUTER_MODEL = os.getenv("GEMINI_ROUTER_MODEL", "gemini-3.1-flash-lite")
+REFLECTION_MODEL = os.getenv("GEMINI_REFLECTION_MODEL", "gemini-3.5-flash-lite")
+# Tried in order when a model is out of daily quota, overloaded, or times out.
 FALLBACK_MODELS = [m.strip() for m in
-                   os.getenv("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-3.5-flash-lite").split(",") if m.strip()]
+                   os.getenv("GEMINI_FALLBACK_MODELS",
+                             "gemini-3.6-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite").split(",") if m.strip()]
 BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 ENABLE_REFLECTION = True    # bonus: self-check every draft before it is sent
 SHOW_TRACE_IN_UI = True     # show router / tool / reflection steps as collapsible boxes in the chat

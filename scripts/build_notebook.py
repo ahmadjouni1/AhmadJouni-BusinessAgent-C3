@@ -69,9 +69,10 @@ GEMINI_API_KEY=your-key-here
 The next cell then clones this repo (for the `me/` documents), installs the requirements and loads the key. Locally it does nothing.
 
 We use the `openai` client pointed at **Gemini's OpenAI-compatible endpoint**. The agent's model lives in one config variable (`MODEL`).
-The router and the reflection step use their own models (`ROUTER_MODEL`, `REFLECTION_MODEL`) because Gemini's free tier
-rate-limits each model separately (about 5 requests/minute, 20/day). `llm()` waits out per-minute 429s and switches to a
-fallback model when a model's daily quota runs out."""),
+The router and the reflection step use their own models (`ROUTER_MODEL`, `REFLECTION_MODEL`): Gemini's free tier limits each
+model separately (Flash about 20 requests/day, Flash-Lite about 500/day), so these simpler steps run on Flash-Lite and the Flash
+quota is kept for the agent. `llm()` waits out per-minute 429s and switches to a fallback model when a model's daily quota
+runs out, it is overloaded, or it doesn't answer within 45 seconds."""),
     code("""# Google Colab only: fetch the project files, install dependencies, load the key from Colab Secrets.
 import os, sys
 if "google.colab" in sys.modules:

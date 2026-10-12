@@ -92,13 +92,16 @@ The app uses the `openai` Python client pointed at Gemini's OpenAI-compatible en
 | Variable | Default | Used for | Override in `.env` |
 |---|---|---|---|
 | `MODEL` | `gemini-3.8-flash` | the agent (tool calling) | `GEMINI_MODEL` |
-| `ROUTER_MODEL` | `gemini-3.5-flash-lite` | intent classification | `GEMINI_ROUTER_MODEL` |
-| `REFLECTION_MODEL` | `gemini-3.6-flash` | reflection check | `GEMINI_REFLECTION_MODEL` |
+| `ROUTER_MODEL` | `gemini-3.1-flash-lite` | intent classification | `GEMINI_ROUTER_MODEL` |
+| `REFLECTION_MODEL` | `gemini-3.5-flash-lite` | reflection check | `GEMINI_REFLECTION_MODEL` |
+| `FALLBACK_MODELS` | `gemini-3.6-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-flash-lite` | used in order when a model is unavailable | `GEMINI_FALLBACK_MODELS` |
 
-Gemini's free tier rate-limits each model separately (about 5 requests per minute), and one chat turn makes 3 to 4
-calls, so the steps are spread across models. If the per-minute limit is hit, `llm()` waits the delay Gemini suggests
-and retries (`[RATE LIMIT] ... waiting Ns`). The free tier also caps each model at about **20 requests per day**; when
-a model's daily quota runs out, `llm()` switches to the next model in `FALLBACK_MODELS` (`[QUOTA] ... switching model`).
+Gemini's free tier limits each model separately: Flash models get about **20 requests per day** (5 per minute) and
+Flash-Lite models about **500 per day** (15 per minute). One chat turn makes 3 to 4 calls, so the router and the
+reflection step run on Flash-Lite and the Flash quota is kept for the agent. `llm()` handles the limits:
+- per-minute limit hit: waits the delay Gemini suggests and retries (`[RATE LIMIT] ... waiting Ns`);
+- daily quota used up: switches to the next model in `FALLBACK_MODELS` (`[QUOTA] ... switching model`);
+- model overloaded (503) or no answer within 45 s: switches to the next model (`[OVERLOADED]` / `[TIMEOUT]`).
 For heavy use, enable billing on your Google AI Studio project.
 
 ## Run locally

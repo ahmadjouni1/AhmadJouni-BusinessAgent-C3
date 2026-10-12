@@ -1,9 +1,9 @@
 # Demo video script
 
-**Quota note (free tier):** Gemini allows about 20 requests per day per model. One chat turn uses about 1 to 2 agent
-requests plus one router request and one reflection request, each on a different model. When a model runs out, the app
-switches to a fallback model (`[QUOTA] ... switching model` in the terminal). Record the video on fresh quota, and keep
-any dry run short.
+**Quota note (free tier):** each chat turn uses 1 to 2 agent requests on Gemini Flash (about 20 per day per model,
+40 in total with the fallback) plus one router and one reflection request on Flash-Lite (about 500 per day). The whole
+script is about 15 Flash requests. If a model is busy or out of quota, the terminal shows `[OVERLOADED]`, `[TIMEOUT]` or
+`[QUOTA] ... switching model` and the next model answers.
 
 ## Setup before recording
 1. Delete old logs so the video starts clean (PowerShell): `Remove-Item *.jsonl`
