@@ -76,7 +76,10 @@ fallback model when a model's daily quota runs out."""),
 import os, sys
 if "google.colab" in sys.modules:
     if not os.path.exists("me"):
-        !git clone -q https://github.com/ahmadjouni1/AhmadJouni-BusinessAgent-C3.git
+        if os.path.exists("AhmadJouni-BusinessAgent-C3"):
+            !git -C AhmadJouni-BusinessAgent-C3 pull -q
+        else:
+            !git clone -q https://github.com/ahmadjouni1/AhmadJouni-BusinessAgent-C3.git
         %cd AhmadJouni-BusinessAgent-C3
     %pip install -q -r requirements.txt
     from google.colab import userdata

@@ -17,7 +17,7 @@ from pathlib import Path
 import time
 
 from dotenv import load_dotenv
-from openai import APIStatusError, OpenAI, RateLimitError
+from openai import APIConnectionError, APIStatusError, OpenAI, RateLimitError
 from pypdf import PdfReader
 
 load_dotenv(override=True)
@@ -45,7 +45,7 @@ REFLECTION_FILE = LOG_DIR / "reflection.jsonl"
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise RuntimeError("GEMINI_API_KEY is not set. Put it in .env (local) or in the Space secrets (Hugging Face).")
-client = OpenAI(api_key=api_key, base_url=BASE_URL, max_retries=1)
+client = OpenAI(api_key=api_key, base_url=BASE_URL, max_retries=1, timeout=45)  # don't hang on a busy model
 print(f"Agent: {MODEL} | router: {ROUTER_MODEL} | reflection: {REFLECTION_MODEL} | via {BASE_URL}")
 
 
@@ -90,6 +90,9 @@ def llm(**kwargs):
                 if e.status_code < 500:
                     raise
                 print(f"[OVERLOADED] {model}: HTTP {e.status_code}, trying the next model")
+                break
+            except APIConnectionError as e:  # includes timeouts: a busy model can hang instead of answering 503
+                print(f"[TIMEOUT] {model}: {type(e).__name__}, trying the next model")
                 break
     raise QuotaExhausted("Every configured Gemini model is out of daily free-tier quota or unavailable. "
                          "Wait for the daily reset or enable billing in Google AI Studio.")
