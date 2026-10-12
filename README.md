@@ -111,6 +111,10 @@ jupyter nbconvert --to notebook --execute --inplace business_agent.ipynb
 
 The last cell launches the Gradio chat inline.
 
+**Google Colab:** File → Open notebook → GitHub → `ahmadjouni1/AhmadJouni-BusinessAgent-C3` → `business_agent.ipynb`.
+Add `GEMINI_API_KEY` in the 🔑 Secrets panel (enable *Notebook access*), then Runtime → Run all. The first code cell
+clones the repo for the `me/` documents, installs the requirements and loads the key from Secrets.
+
 **App:**
 
 ```bash

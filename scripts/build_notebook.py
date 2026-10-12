@@ -61,15 +61,27 @@ final reply → Gradio ChatInterface
 > the deployed app run exactly the same logic."""),
 
     md("""## 0 · Setup
-Install dependencies once (`pip install -r requirements.txt`), then put your key in `.env`:
+**Locally:** install dependencies once (`pip install -r requirements.txt`), then put your key in `.env`:
 ```
 GEMINI_API_KEY=your-key-here
 ```
+**Google Colab:** add the key in the 🔑 *Secrets* panel (left sidebar) as `GEMINI_API_KEY` and enable *Notebook access*.
+The next cell then clones this repo (for the `me/` documents), installs the requirements and loads the key. Locally it does nothing.
+
 We use the `openai` client pointed at **Gemini's OpenAI-compatible endpoint**. The agent's model lives in one config variable (`MODEL`).
 The router and the reflection step use their own models (`ROUTER_MODEL`, `REFLECTION_MODEL`) because Gemini's free tier
 rate-limits each model separately (about 5 requests/minute, 20/day). `llm()` waits out per-minute 429s and switches to a
 fallback model when a model's daily quota runs out."""),
-    code("# Uncomment on a fresh environment (e.g. Colab):\n# %pip install -q -r requirements.txt"),
+    code("""# Google Colab only: fetch the project files, install dependencies, load the key from Colab Secrets.
+import os, sys
+if "google.colab" in sys.modules:
+    if not os.path.exists("me"):
+        !git clone -q https://github.com/ahmadjouni1/AhmadJouni-BusinessAgent-C3.git
+        %cd AhmadJouni-BusinessAgent-C3
+    %pip install -q -r requirements.txt
+    from google.colab import userdata
+    os.environ["GEMINI_API_KEY"] = userdata.get("GEMINI_API_KEY")
+    print("Colab setup done:", os.getcwd())"""),
     src("setup"),
 
     md("""## 1 · Business identity
